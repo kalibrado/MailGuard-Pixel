@@ -531,3 +531,4 @@ if __name__ == "__main__":
         app.run(host=host, port=port, debug=True)
     else:
         logger.info(f"Mode production - Serveur sur {host}:{port}")
+        app.run(host=host, port=port, debug=False)
