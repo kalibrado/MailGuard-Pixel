@@ -1,7 +1,9 @@
 FROM python:3.12-alpine
 WORKDIR /app
 COPY server ./
-ENV DEBUG_MODE=false \
+ENV USERNAME=admin \
+    PASSWORD=password \
+    DEBUG_MODE=false \
     LOG_FILE='logs/tracking.log' \
     WEBHOOK_URL='' \
     MAX_LOG_SIZE=10485760 \
