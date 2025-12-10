@@ -22,7 +22,7 @@ app = Flask(__name__)
 USERNAME = os.getenv('USERNAME','admin')
 PASSWORD =  os.getenv('PASSWORD','password')
 DEBUG_MODE = os.getenv('DEBUG_MODE', 'False').lower() == 'true'
-LOG_FILE = os.getenv('LOG_FILE', 'tracking.log')
+LOG_PATH = os.getenv('LOG_PATH', 'logs')
 WEBHOOK_URL = os.getenv('WEBHOOK_URL', '')
 MAX_LOG_SIZE = int(os.getenv('MAX_LOG_SIZE', 10485760))  # 10MB par défaut
 BACKUP_COUNT = int(os.getenv('BACKUP_COUNT', 5))
@@ -52,14 +52,14 @@ cache_lock = threading.Lock()
 # Configuration du logging structuré
 def setup_logging():
     """Configure un système de logging robuste avec rotation"""
+    os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
     formatter = logging.Formatter(
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
-    
     # Handler pour fichier avec rotation
     file_handler = RotatingFileHandler(
-        LOG_FILE,
+        LOG_PATH + "tracking.log",
         maxBytes=MAX_LOG_SIZE,
         backupCount=BACKUP_COUNT,
         encoding='utf-8'
@@ -497,7 +497,7 @@ def print_banner():
 
   Configuration:
    • Mode Debug: {debug}
-   • Log File: {log_file}
+   • Log File: {LOG_PATH}
    • Webhook: {webhook}
    • Geolocation: {geo}
 
@@ -513,7 +513,7 @@ def print_banner():
 
 """.format(
         debug=" Enabled" if DEBUG_MODE else " Disabled",
-        log_file=LOG_FILE,
+        LOG_PATH=LOG_PATH,
         webhook=" Configured" if WEBHOOK_URL else " Not set",
         geo=" Enabled" if ENABLE_GEOLOCATION else " Disabled"
     )

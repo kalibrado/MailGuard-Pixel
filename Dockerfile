@@ -4,7 +4,7 @@ COPY server ./
 ENV USERNAME=admin \
     PASSWORD=password \
     DEBUG_MODE=false \
-    LOG_FILE='logs/tracking.log' \
+    LOG_FILE='logs/' \
     WEBHOOK_URL='' \
     MAX_LOG_SIZE=10485760 \
     BACKUP_COUNT=5 \
@@ -14,4 +14,4 @@ ENV USERNAME=admin \
 
 RUN pip install -r requirements.txt
 EXPOSE 8080
-CMD ["gunicorn", "-w", "4", "-b", "8080", "app:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "app:app"]
