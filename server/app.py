@@ -1,4 +1,4 @@
-from flask import Flask, send_file, request, make_response, jsonify
+from flask import Flask, send_file, request, make_response, jsonify, Response
 from werkzeug.middleware.proxy_fix import ProxyFix
 import ipaddress
 from datetime import datetime, timezone, timedelta
@@ -19,6 +19,8 @@ load_dotenv()
 app = Flask(__name__)
 
 # Configuration depuis variables d'environnement
+USERNAME = os.getenv('USERNAME','admin')
+PASSWORD =  os.getenv('PASSWORD','password')
 DEBUG_MODE = os.getenv('DEBUG_MODE', 'False').lower() == 'true'
 LOG_FILE = os.getenv('LOG_FILE', 'tracking.log')
 WEBHOOK_URL = os.getenv('WEBHOOK_URL', '')
@@ -325,9 +327,24 @@ def pixel_tracker():
         pixel_img = generate_transparent_pixel()
         return send_file(pixel_img, mimetype="image/png")
 
+
+
+def check_auth(username, password):
+    return username == USERNAME and password == PASSWORD
+
+def authenticate():
+    """Renvoie 401 pour demander l'auth"""
+    return Response(
+        'Authentification requise', 401,
+        {'WWW-Authenticate': 'Basic realm="Login Required"'}
+    )
+
 @app.route("/dashboard")
 def dashboard():
-    """Sert le dashboard HTML"""
+    """Sert le dashboard HTML avec auth"""
+    auth = request.authorization
+    if not auth or not check_auth(auth.username, auth.password):
+        return authenticate()
     return send_file("dashboard.html")
 
 @app.route("/api/logs")
